@@ -65,8 +65,11 @@ def gate_converter(gate_type, nets_info):
     gate = gate_type + " gate("
     dict = {0:'a', 1:'b', 2:'c', 3:'d', 4:'e', 5:'f', 6:'g', 7:'h', 8:'i', 9:'j', 10:'k', 11:'l', 12:'m', 13:'n', 14:'o', 15:'p',
             16:'q', 17:'r', 18:'s', 19:'t', 20:'u', 21:'v', 22:'w', 23:'x', 24:'y', 25:'z'}
-    for index in range(0, len(inputs)):
-        gate += " ." + dict[index] + "(" + inputs[index] + "),"
+    if type(inputs) == type("str"):
+        gate += " ." + "a(" + inputs + "),"
+    else:
+        for index in range(0, len(inputs)):
+            gate += " ." + dict[index] + "(" + inputs[index] + "),"
     gate += " .O(" + output + ") );\n"
     return gate
     print ""
@@ -83,9 +86,13 @@ def collect_wire_info(inputs, outputs, wires, line_str):
     return nets_info
 
 def find_gate_type(line_str):
-    type = re.findall("\=.*\(",line_str)[0].replace(" ",'').replace("=",'').replace("(",'')
-    fanin_number = len(find_netname_in_brace(line_str))
-    return type + str(fanin_number)
+    gate_type = re.findall("\=.*\(",line_str)[0].replace(" ",'').replace("=",'').replace("(",'')
+    if gate_type == "not": gate_type = "inv"
+    if type(find_netname_in_brace(line_str)) is type("str"):
+        fanin_number = 1
+    else:
+        fanin_number = len(find_netname_in_brace(line_str))
+    return gate_type + str(fanin_number)
 
 ''' Commdline Parser'''
 
